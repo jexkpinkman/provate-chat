@@ -16,26 +16,56 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
+html, body {
   font-family: 'Inter', -apple-system, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
+  height: 100%;
   overflow-x: hidden;
+}
+
+#app {
+  min-height: 100vh;
+  width: 100%;
 }
 
 /* Screens */
 .screen {
   display: none;
+  width: 100%;
   min-height: 100vh;
-  animation: fadeIn 0.4s ease;
 }
 
-.screen.active { display: flex; }
+.screen.active {
+  display: flex;
+  animation: fadeIn 0.4s ease;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer Credit - cuma di lobby */
+.footer-credit {
+  text-align: center;
+  padding: 1.25rem;
+  margin-top: auto;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-top: 1px solid var(--border);
+  opacity: 0.7;
+}
+
+.footer-credit strong {
+  background: linear-gradient(135deg, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
 }
 
 /* Login */
@@ -44,6 +74,10 @@ body {
   max-width: 420px;
   margin: auto;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .logo {
@@ -197,6 +231,9 @@ input::placeholder { color: #64748b; }
   margin: 0 auto;
   padding: 1.5rem;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .lobby-header {
@@ -330,7 +367,6 @@ input::placeholder { color: #64748b; }
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 1.25rem;
-  cursor: pointer;
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
@@ -381,6 +417,17 @@ input::placeholder { color: #64748b; }
   font-size: 0.85rem;
 }
 
+.lock-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
 .empty-state {
   text-align: center;
   padding: 3rem;
@@ -394,13 +441,18 @@ input::placeholder { color: #64748b; }
 }
 
 /* Chat Layout */
+#chat-screen.screen.active {
+  display: block;
+}
+
 .chat-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
   background: var(--bg-secondary);
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
 }
 
 .chat-header {
@@ -410,9 +462,7 @@ input::placeholder { color: #64748b; }
   padding: 1rem 1.25rem;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .room-info { flex: 1; }
@@ -504,7 +554,6 @@ input::placeholder { color: #64748b; }
   font-size: 0.95rem;
   line-height: 1.5;
   word-break: break-word;
-  position: relative;
 }
 
 .message.other .message-bubble {
@@ -574,12 +623,15 @@ input::placeholder { color: #64748b; }
   padding: 1rem 1.25rem;
   background: var(--bg-card);
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .input-wrapper {
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .input-wrapper input {

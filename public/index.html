@@ -3,75 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Skun - Railway</title>
+  <title>Chat Skun</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
     <!-- Login Screen -->
-    <div id="login-screen" class="screen">
-      <div class="card">
-        <h1>💬 Chat Skun</h1>
-        <p>Masukin nama lu dulu bre</p>
-        <form id="login-form">
-          <input type="text" id="username-input" placeholder="Username..." required>
-          <button type="submit" class="btn-primary">Masuk</button>
+    <div id="login-screen" class="screen active">
+      <div class="login-container">
+        <div class="logo">
+          <div class="logo-icon">💬</div>
+          <h1>Chat Skun</h1>
+          <p>Private group chat made simple</p>
+        </div>
+        <form id="login-form" class="form-card">
+          <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username-input" placeholder="Masukin nama lu..." required autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span>Masuk</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
         </form>
       </div>
     </div>
 
     <!-- Lobby Screen -->
-    <div id="lobby-screen" class="screen hidden">
-      <div class="lobby-card">
-        <div class="header">
-          <h2>👤 <span id="display-username"></span></h2>
-          <button onclick="logout()" class="btn-danger">Logout</button>
-        </div>
-
-        <div class="section">
-          <h3>🔑 Join via Kode</h3>
-          <div class="form-row">
-            <input type="text" id="join-code" placeholder="Masukin kode...">
-            <button onclick="joinByCode()" class="btn-success">Join</button>
+    <div id="lobby-screen" class="screen">
+      <div class="lobby-container">
+        <div class="lobby-header">
+          <div class="user-info">
+            <div class="avatar" id="user-avatar"></div>
+            <div class="user-details">
+              <h3 id="display-username">User</h3>
+              <span class="status online">Online</span>
+            </div>
           </div>
+          <button onclick="logout()" class="btn btn-ghost">Logout</button>
         </div>
 
-        <div class="section">
-          <h3>➕ Buat Skun Baru</h3>
-          <form id="create-room-form" class="form-row">
-            <input type="text" id="room-name" placeholder="Nama grup..." required>
-            <button type="submit" class="btn-primary">Buat</button>
-          </form>
-        </div>
+        <div class="lobby-content">
+          <div class="action-cards">
+            <div class="action-card join-card">
+              <div class="action-icon">🔑</div>
+              <h3>Join Skun</h3>
+              <p>Masuk ke grup pake kode</p>
+              <div class="input-row">
+                <input type="text" id="join-code" placeholder="Kode grup..." maxlength="6">
+                <button onclick="joinByCode()" class="btn btn-success">Join</button>
+              </div>
+            </div>
 
-        <div class="room-list">
-          <h3>📋 Skun yang ada:</h3>
-          <div id="rooms-container"></div>
+            <div class="action-card create-card">
+              <div class="action-icon">➕</div>
+              <h3>Buat Skun</h3>
+              <p>Bikin grup chat baru</p>
+              <form id="create-room-form" class="input-row">
+                <input type="text" id="room-name" placeholder="Nama grup..." required autocomplete="off">
+                <button type="submit" class="btn btn-primary">Buat</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="rooms-section">
+            <div class="section-header">
+              <h2>📋 Skun yang ada</h2>
+              <span class="badge" id="room-count">0</span>
+            </div>
+            <div id="rooms-container" class="rooms-grid"></div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Chat Screen -->
-    <div id="chat-screen" class="screen hidden">
-      <div class="chat-container">
+    <div id="chat-screen" class="screen">
+-screen" class="screen">
+      <div class="chat-layout">
         <div class="chat-header">
-          <button onclick="leaveRoom()" class="btn-secondary">← Back</button>
-          <div>
-            <h3 id="room-title">Room Name</h3>
-            <small id="room-code">Kode: -</small>
+          <button onclick="leaveRoom()" class="btn btn-icon">←</button>
+          <div class="room-info">
+            <h3 id="room-title">Room</h3>
+            <div class="room-meta">
+              <span class="code-badge" id="room-code">Kode: -</span>
+              <span class="member-count" id="member-count">• 1 online</span>
+            </div>
           </div>
+          <button onclick="copyCode()" class="btn btn-ghost btn-sm" id="copy-btn">Copy</button>
         </div>
-        
+
         <div id="messages" class="messages"></div>
 
-        <form id="chat-form" class="chat-form">
-          <input type="text" id="message-input" placeholder="Ketik pesan..." required>
-          <button type="submit" class="btn-primary">Kirim</button>
+        <div class="typing-indicator hidden" id="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+
+        <form id="chat-form" class="chat-input-area">
+          <div class="input-wrapper">
+            <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off">
+            <button type="submit" class="btn btn-send">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
         </form>
       </div>
     </div>
   </div>
 
+  <div id="toast" class="toast"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
 </body>

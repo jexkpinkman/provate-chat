@@ -667,6 +667,24 @@ input::placeholder { color: #64748b; }
   flex-shrink: 0;
 }
 
+ /* Fix keyboard push on mobile */
+@media (max-height: 500px) {
+  .chat-input-area {
+    padding: 0.5rem;
+  }
+  
+  .messages {
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Safe area for mobile keyboard */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .chat-input-area {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}
+
 
 /* Toast */
 .toast {

@@ -1,7 +1,6 @@
 const socket = io();
 let currentUser = localStorage.getItem('chat_username') || '';
 let currentRoom = null;
-const messagesEndRef = { current: null };
 
 // Avatar color generator
 function getAvatarColor(name) {
@@ -56,7 +55,8 @@ document.getElementById('login-form').addEventListener('submit', (e) => {
 function showLobby() {
   showScreen('lobby-screen');
   document.getElementById('display-username').textContent = currentUser;
-  document.getElementById('user-avatar').outerHTML = createAvatarHTML(currentUser);
+  const avatarEl = document.getElementById('user-avatar');
+  if (avatarEl) avatarEl.outerHTML = createAvatarHTML(currentUser);
   loadRooms();
 }
 
@@ -66,7 +66,7 @@ function logout() {
   location.reload();
 }
 
-// Rooms
+// Rooms - HANYA LIST, TIDAK BISA DIKLIK
 async function loadRooms() {
   try {
     const res = await fetch('/api/rooms');
@@ -84,12 +84,16 @@ async function loadRooms() {
     }
 
     container.innerHTML = rooms.map(room => `
-      <div class="room-card" onclick="enterRoom('${room._id}', '${room.name}', '${room.code}')">
+      <div class="room-card">
         <div class="room-card-header">
           <span class="room-name">${escapeHtml(room.name)}</span>
           <span class="room-code">${room.code}</span>
         </div>
-        <div class="room-meta">Klik untuk masuk ke grup</div>
+        <div class="room-meta">Grup private</div>
+        <div class="lock-hint">
+          <span>🔒</span>
+          <span>Masukin kode di atas buat join</span>
+        </div>
       </div>
     `).join('');
   } catch (err) {
@@ -117,9 +121,18 @@ document.getElementById('create-room-form').addEventListener('submit', async (e)
   }
 });
 
+// JOIN HANYA LEWAT FORM KODE
 function joinByCode() {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
-  if (!code) return;
+  if (!code) {
+    showToast('Masukin kode dulu!');
+    return;
+  }
+  if (code.length !== 6) {
+    showToast('Kode harus 6 karakter!');
+    return;
+  }
+  
   fetch('/api/rooms')
     .then(res => res.json())
     .then(rooms => {
@@ -130,7 +143,8 @@ function joinByCode() {
       } else {
         showToast('Kode skun gak ketemu!');
       }
-    });
+    })
+    .catch(() => showToast('Error, coba lagi'));
 }
 
 function enterRoom(roomId, name, code) {
@@ -203,6 +217,12 @@ document.getElementById('chat-form').addEventListener('submit', (e) => {
   });
   
   input.value = '';
+  input.focus();
+});
+
+// Auto scroll pas keyboard muncul
+document.getElementById('message-input').addEventListener('focus', () => {
+  setTimeout(scrollToBottom, 300);
 });
 
 // Helpers

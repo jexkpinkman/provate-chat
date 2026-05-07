@@ -1,43 +1,90 @@
-const express = require("express")
-const http = require("http")
-const cors = require("cors")
-const {Server} = require("socket.io")
-require("dotenv").config()
+require('dotenv').config();
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const path = require('path');
 
-const connectDB = require("./config/db")
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { 
+  cors: { origin: '*' },
+  transports: ['websocket', 'polling'] 
+});
 
-const authRoutes = require("./routes/auth")
-const chatRoutes = require("./routes/chat")
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-const app = express()
-const server = http.createServer(app)
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ MongoDB Connected'))
+  .catch(err => console.error('❌ MongoDB Error:', err));
 
-const io = new Server(server,{
-cors:{origin:"*"}
-})
+// Schemas
+const Room = mongoose.model('Room', new mongoose.Schema({
+  name: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
+  createdAt: { type: Date, default: Date.now }
+}));
 
-connectDB()
+const Message = mongoose.model('Message', new mongoose.Schema({
+  roomId: { type: String, required: true },
+  username: { type: String, required: true },
+  text: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+}));
 
-app.use(cors())
-app.use(express.json())
+// REST API
+app.get('/api/rooms', async (req, res) => {
+  const rooms = await Room.find().sort({ createdAt: -1 });
+  res.json(rooms);
+});
 
-app.use("/api/auth",authRoutes)
-app.use("/api/chat",chatRoutes)
+app.post('/api/rooms', async (req, res) => {
+  const { name } = req.body;
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const room = await Room.create({ name, code });
+  res.json(room);
+});
 
-io.on("connection",(socket)=>{
+app.get('/api/rooms/:roomId', async (req, res) => {
+  const room = await Room.findById(req.params.roomId);
+  if (!room) return res.status(404).json({ error: 'Not found' });
+  res.json(room);
+});
 
-console.log("user connected")
+app.get('/api/rooms/:roomId/messages', async (req, res) => {
+  const messages = await Message.find({ roomId: req.params.roomId }).sort({ createdAt: 1 });
+  res.json(messages);
+});
 
-socket.on("chat message",(msg)=>{
+// Socket.io Real-time
+io.on('connection', (socket) => {
+  console.log('🔌 User connected:', socket.id);
 
-io.emit("chat message",msg)
+  socket.on('join-room', async (roomId) => {
+    socket.join(roomId);
+    const messages = await Message.find({ roomId }).sort({ createdAt: 1 }).limit(100);
+    socket.emit('load-messages', messages);
+    console.log(`👤 User joined room: ${roomId}`);
+  });
 
-})
+  socket.on('send-message', async (data) => {
+    const { roomId, username, text } = data;
+    const message = await Message.create({ roomId, username, text });
+    io.to(roomId).emit('new-message', message);
+  });
 
-})
+  socket.on('leave-room', (roomId) => {
+    socket.leave(roomId);
+  });
 
-const PORT = process.env.PORT || 3000
+  socket.on('disconnect', () => {
+    console.log('❌ User disconnected:', socket.id);
+  });
+});
 
-server.listen(PORT,()=>{
-console.log("server running "+PORT)
-})
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

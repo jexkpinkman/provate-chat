@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chat Skun</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -85,34 +85,28 @@
 
     <!-- Chat Screen -->
     <div id="chat-screen" class="screen">
-      <div class="chat-layout">
-        <div class="chat-header">
-          <button onclick="leaveRoom()" class="btn btn-icon">←</button>
-          <div class="room-info">
-            <h3 id="room-title">Room</h3>
-            <div class="room-meta">
-              <span class="code-badge" id="room-code">Kode: -</span>
-              <span class="member-count" id="member-count">• 1 online</span>
-            </div>
+      <div class="chat-header">
+        <button onclick="leaveRoom()" class="btn btn-icon">←</button>
+        <div class="room-info">
+          <h3 id="room-title">Room</h3>
+          <div class="room-meta">
+            <span class="code-badge" id="room-code">Kode: -</span>
+            <span class="member-count" id="member-count">• 1 online</span>
           </div>
-          <button onclick="copyCode()" class="btn btn-ghost btn-sm" id="copy-btn">Copy</button>
         </div>
-
-        <div id="messages" class="messages"></div>
-
-        <div class="typing-indicator hidden" id="typing-indicator">
-          <span></span><span></span><span></span>
-        </div>
-
-  <form id="chat-form" class="chat-input-area">
-  <div class="input-wrapper">
-    <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off">
-    <button type="submit" class="btn btn-send">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-         </div>
-        </form>
+        <button onclick="copyCode()" class="btn btn-ghost btn-sm" id="copy-btn">Copy</button>
       </div>
+
+      <div id="messages" class="messages"></div>
+
+      <form id="chat-form" class="chat-input-area">
+        <div class="input-wrapper">
+          <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off">
+          <button type="submit" class="btn btn-send">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
